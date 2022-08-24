@@ -1,0 +1,11 @@
+/volumes/html
+/volumes/database
+/volumes/chat-server
+/volumes/nginx/logs/*
+/chat/volumes/chat-server
+/elastic.
+/elastic
+/nginx/logs/*
+/mysql/slow/*
+.env
+/.idea
