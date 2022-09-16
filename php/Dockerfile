@@ -14,6 +14,7 @@ RUN apt-get update \
     libzip-dev \
     procps \
 	libmagickwand-dev \
+    libmagickcore-dev \
     && docker-php-ext-install \
     zip \
     pdo \
@@ -23,7 +24,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update \
-    && apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
+    && apt-get install -y nano libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
     && docker-php-ext-configure gd \
     && docker-php-ext-install -j$(nproc) gd 
 
@@ -41,6 +42,10 @@ RUN docker-php-ext-install \
     bcmath \
     exif \
     opcache
+
+# INSTALL IMAGICK
+RUN pecl install imagick \
+    && docker-php-ext-enable imagick
 	
 # Create the log file to be able to run tail
 RUN touch /var/log/cron.log
