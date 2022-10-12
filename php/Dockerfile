@@ -1,9 +1,7 @@
 FROM php:8.1.0-fpm
 
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"\
-    && php composer-setup.php\
-    && php -r "unlink('composer-setup.php');"\
-    && mv composer.phar /usr/local/bin/composer
+# INSTALL Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Install dependencies
 RUN apt-get update \
@@ -60,7 +58,8 @@ COPY supervisor/conf.d/* /etc/supervisor/conf.d/
 
 RUN echo "memory_limit = 1G" >> /usr/local/etc/php/conf.d/settings.ini
 
-RUN echo "upload_max_filesize = 100M" >> /usr/local/etc/php/conf.d/settings.ini
+RUN echo "upload_max_filesize = 500M" >> /usr/local/etc/php/conf.d/settings.ini
+RUN echo "post_max_size = 500M" >> /usr/local/etc/php/conf.d/settings.ini
 RUN echo "output_buffering = 4096" >> /usr/local/etc/php/conf.d/settings.ini
 RUN echo "session.sid_length = 26" >> /usr/local/etc/php/conf.d/settings.ini
 RUN echo "session.sid_bits_per_character = 5" >> /usr/local/etc/php/conf.d/settings.ini
