@@ -71,12 +71,36 @@ services:
     networks:
       - whoosh-network
 
+  nest:
+    build:
+      context: ./nest
+    restart: always
+    working_dir: /home/node/app
+    volumes:
+      - ./volumes/nest:/home/node/app
+    ports:
+      - "${NEST_PORT}:3000"
+    links:
+      - ch_server
+    networks:
+      - whoosh-network
+
+  ch_server:
+    image: yandex/clickhouse-server
+    restart: always
+    ports:
+      - "${CLICKHOUSE_PORT}:8123"
+    volumes:
+      - ./volumes/clickhouse/db:/var/lib/clickhouse
+    user: '${UID}:${GID}'
+    environment:
+      CLICKHOUSE_USER: "${COMPOSE_CLICKHOUSE_USER}"
+      CLICKHOUSE_PASSWORD: "${COMPOSE_CLICKHOUSE_PASSWORD}"
+      CLICKHOUSE_DB: "${COMPOSE_CLICKHOUSE_DATABASE}"
+      CLICKHOUSE_INIT_TIMEOUT: 60
+    networks:
+      - whoosh-network
 
 networks:
-    whoosh-network:
-        driver: bridge
-        ipam:
-            driver: default
-            config:
-                - subnet: 192.168.220.16/28
-
+  whoosh-network:
+    driver: bridge
