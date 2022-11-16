@@ -1,10 +1,8 @@
 /volumes/html
+/volumes/nest
 /volumes/database
-/volumes/chat-server
+/volumes/clickhouse
 /volumes/nginx/logs/*
-/chat/volumes/chat-server
-/elastic.
-/elastic
 /nginx/logs/*
 /mysql/slow/*
 .env
