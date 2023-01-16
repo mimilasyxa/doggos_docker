@@ -82,22 +82,52 @@ services:
       - "${NEST_PORT}:3000"
     links:
       - ch_server
+      - geotrack-mysql
     networks:
       - whoosh-network
 
   ch_server:
     image: yandex/clickhouse-server
-    restart: always
     ports:
       - "${CLICKHOUSE_PORT}:8123"
     volumes:
       - ./volumes/clickhouse/db:/var/lib/clickhouse
+      - ./volumes/clickhouse/logs:/var/log/clickhouse-server
     user: '${UID}:${GID}'
     environment:
       CLICKHOUSE_USER: "${COMPOSE_CLICKHOUSE_USER}"
       CLICKHOUSE_PASSWORD: "${COMPOSE_CLICKHOUSE_PASSWORD}"
       CLICKHOUSE_DB: "${COMPOSE_CLICKHOUSE_DATABASE}"
       CLICKHOUSE_INIT_TIMEOUT: 60
+    networks:
+      - whoosh-network
+
+  geotrack-mysql:
+    build:
+      context: ./mysql/
+    restart: always
+    volumes:
+      - ./volumes/geotrack-mysql/dump:/docker-entrypoint-initdb.d
+      - ./volumes/geotrack-mysql/data:/var/lib/mysql
+    ports:
+      - '${PORT_GEOTRACK_DB}:3306'
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_GEOTRACK_ROOT_PASSWORD}'
+      MYSQL_DATABASE: '${DB_GEOTRACK_DATABASE}'
+      MYSQL_USER: '${DB_GEOTRACK_USER}'
+      MYSQL_PASSWORD: '${DB_GEOTRACK_PASSWORD}'
+    networks:
+      - whoosh-network
+
+  rabbitmq:
+    image: rabbitmq:3.9-management-alpine
+    ports:
+      - '${PORT_RABBITMQ}:5672'
+      - '${PORT_RABBITMQ_MANAGEMENT}:15672'
+    environment:
+      RABBITMQ_DEFAULT_USER: '${RABBITMQ_USER}'
+      RABBITMQ_DEFAULT_PASS: '${RABBITMQ_PASSWORD}'
     networks:
       - whoosh-network
 
