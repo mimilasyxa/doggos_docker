@@ -2,10 +2,11 @@
 Сборка включает в себя:
 - nginx
 - php-fpm 8.1.0 + cron
-- mysql 8
+- mysql 8 (один для backend-core, другой для сервиса geotrackа)
 - redis 6
 - nest.js
 - clickhouse
+- rabbitmq 3.9 + management tool (в docker-compose - PORT_RABBITMQ_MANAGEMENT)
 
 Версии сервисов можно менять в зависимости от требований.
 
