@@ -1,0 +1,18 @@
+version: '2'
+
+services:
+  node:
+    image: node:11.1.0
+    working_dir: /home/project
+    user: '${UID}:${GID}'
+    volumes:
+      - ./volumes/html:/home/project
+    network_mode: bridge
+
+  gulp:
+    build:
+      context: ./gulp/
+    working_dir: /home/project
+    volumes:
+      - ./volumes/html:/home/project
+    network_mode: bridge
