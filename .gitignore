@@ -1,0 +1,10 @@
+/volumes/html
+/volumes/nest
+/volumes/database
+/volumes/geotrack-mysql
+/volumes/clickhouse
+/volumes/nginx/logs/*
+/nginx/logs/*
+/mysql/slow/*
+.env
+/.idea

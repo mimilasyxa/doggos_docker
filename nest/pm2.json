@@ -1,0 +1,4 @@
+{
+    "name": "nest",
+    "script": "npm run start:dev"
+}

@@ -1,0 +1,56 @@
+version: '2'
+
+services:
+  nginx:
+    build:
+      context: ./nginx/
+      args:
+        http_protocol: ${HTTP_PROTOCOL}
+        server_name: ${SERVER_NAME}
+    restart: always
+    links:
+      - php
+    ports:
+      - '${PORT_HTTP}:80'
+      - '${PORT_HTTPS}:443'
+    volumes:
+      - ./volumes/html:/var/www/
+      - ./nginx/logs:/var/log/nginx/
+      #- ./nginx/sertificate/your.cert.crt:/etc/ssl/certs/yourproject/ssl.your.cert.crt
+      #- ./nginx/sertificate/your.cert.key:/etc/ssl/certs/yourproject/ssl.your.cert.key
+      #- ./nginx/sertificate/your.cert.ca:/etc/ssl/certs/yourproject/ssl.your.cert.ca
+      - ./nginx/nginx_main.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - php
+
+  php:
+    build:
+      context: ./php/
+    restart: always
+    ports:
+      - '${PORT_PHP}:9000'
+    volumes:
+      - ./volumes/html:/var/www
+      - ./php/pool.d/www.conf:/usr/local/etc/php-fpm.d/www.conf
+      - ./php/supervisor/conf.d:/etc/supervisor/conf.d
+      - ./php/cronlogs/cron.log:/var/log/cron.log
+    links:
+      - mysql
+
+  mysql:
+    build:
+      context: ./mysql/
+    restart: always
+    volumes:
+      - ./volumes/database/dump:/docker-entrypoint-initdb.d
+      - ./volumes/database/data:/var/lib/mysql
+      - ./mysql/my.cnf:/etc/alternatives/my.cnf
+      - ./mysql/slow/:/var/log/mysql/slow
+    ports:
+      - '${PORT_DB}:3306'
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_ROOT_PASSWORD}'
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USER}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
